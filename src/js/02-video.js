@@ -2,37 +2,29 @@
 import Player from '@vimeo/player';
 import throttle from 'lodash.throttle';
 
+const CURRENT_TIME_KEY = 'videoplayer-current-time';
 
-const playerContainer = document.getElementById('vimeo-player-container');
-const videoUrl = 'https://player.vimeo.com/video/236203659';
-
-
-const player = new Player(playerContainer, {
-  url: videoUrl,
-  autoplay: true, 
+const iframe = document.querySelector('iframe');
+const player = new Player(iframe, {
+  loop: true,
+  fullscreen: true,
+  quality: '1080p',
 });
 
+const getCurrentTime = function (currentTime) {
+  const seconds = currentTime.seconds;
+  localStorage.setItem(CURRENT_TIME_KEY, JSON.stringify(seconds));
+};
 
-const saveCurrentTime = throttle(async () => {
-  try {
-    const currentTime = await player.getCurrentTime();
-    localStorage.setItem('videoplayer-current-time', currentTime);
-  } catch (error) {
-    console.error('Error saving current time:', error);
-  }
-}, 1000); 
+player.on('timeupdate', throttle(getCurrentTime, 1000));
 
+player.setCurrentTime(JSON.parse(localStorage.getItem(CURRENT_TIME_KEY)) || 0);
 
-player.on('timeupdate', saveCurrentTime);
-
-
-window.addEventListener('load', async () => {
-  const currentTime = localStorage.getItem('videoplayer-current-time');
-  if (currentTime) {
-    try {
-      await player.setCurrentTime(parseFloat(currentTime));
-    } catch (error) {
-      console.error('Error setting current time:', error);
-    }
-  }
-});
+player
+  .setColor('#d8e0ff')
+  .then(function (color) {
+    console.log('The new color value: #D8E0FF');
+  })
+  .catch(function (error) {
+    console.log('An error occurred while setting the color');
+  });
