@@ -5,6 +5,7 @@ const amount = document.querySelector('input[name="amount"]');
 const btnCreatePromise = document.querySelector('button[type="submit"]');
 
 function createPromise(position, delay) {
+  const shouldResolve = Math.random() > 0.3;
   const promise = new Promise((resolve, reject) => {
     setTimeout(() => {
       const shouldResolve = Math.random() > 0.3;
